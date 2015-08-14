@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?><process xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable" xmlns:ca="http://www.jboss.org/examples/creditAgency" xmlns:lg="http://www.jboss.org/examples/logistics" xmlns:sto="http://www.jboss.org/examples/store" xmlns:tns="http://www.jboss.org/savara/examples" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="PurchaseGoodsProcess_Store" targetNamespace="http://www.jboss.org/examples/store">
+    <import importType="http://schemas.xmlsoap.org/wsdl/" location="PurchaseGoodsProcess_Store.wsdl" namespace="http://www.jboss.org/examples/store"/>
+    <import importType="http://schemas.xmlsoap.org/wsdl/" location="PurchaseGoodsProcess_CreditAgency.wsdl" namespace="http://www.jboss.org/examples/creditAgency"/>
+    <import importType="http://schemas.xmlsoap.org/wsdl/" location="PurchaseGoodsProcess_Logistics.wsdl" namespace="http://www.jboss.org/examples/logistics"/>
+    <import importType="http://schemas.xmlsoap.org/wsdl/" location="PurchaseGoodsProcess_StoreArtifacts.wsdl" namespace="http://www.jboss.org/examples/store"/>
+    <partnerLinks>
+        <partnerLink myRole="Store" name="BuyerToStore" partnerLinkType="sto:BuyerToStoreServiceLT"/>
+        <partnerLink name="StoreToCreditAgency" partnerLinkType="sto:StoreToCreditAgencyLT" partnerRole="CreditAgency"/>
+        <partnerLink name="StoreToLogistics" partnerLinkType="sto:StoreToLogisticsLT" partnerRole="Logistics"/>
+    </partnerLinks>
+    <variables>
+        <variable messageType="sto:buyRequest" name="buyRequestVar"/>
+        <variable messageType="ca:checkCreditRequest" name="checkCreditRequestVar"/>
+        <variable messageType="ca:checkCreditResponse" name="checkCreditResponseVar"/>
+        <variable messageType="lg:deliverRequest" name="deliverRequestVar"/>
+        <variable messageType="lg:deliverResponse" name="deliverResponseVar"/>
+        <variable messageType="sto:buyResponse" name="buyResponseVar"/>
+        <variable messageType="sto:BuyFailedFault" name="BuyFailedFaultVar"/>
+        <variable messageType="sto:AccountNotFoundFault" name="AccountNotFoundFaultVar"/>
+    </variables>
+    <sequence>
+        <receive createInstance="yes" name="Receive_BuyRequest" operation="buy" partnerLink="BuyerToStore" portType="sto:StoreInterface" variable="buyRequestVar"/>
+        <scope>
+            <faultHandlers>
+                <catch faultMessageType="ca:CustomerUnknownFault" faultName="ca:CustomerUnknown" faultVariable="CustomerUnknownFaultVar">
+                    <sequence>
+
+						<assign name="CopyPurchaseDetails">
+		                    <copy>
+		                        <from>
+		                            <literal xml:space="preserve">
+										<tns:AccountNotFound xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+													xmlns:tns="http://www.jboss.org/examples/store" 
+													xsi:schemaLocation="http://www.jboss.org/examples/store store.xsd " 
+													id="" />
+		                            </literal>
+		                        </from>
+		                        <to variable="AccountNotFoundFaultVar" part="content"></to>
+		                    </copy>
+						    <copy>
+						        <from>$CustomerUnknownFaultVar.content/@id</from>
+						        <to>$AccountNotFoundFaultVar.content/@id</to>
+						    </copy>
+						</assign>
+
+                        <reply faultName="sto:AccountNotFound" name="Send_AccountNotFound" operation="buy" partnerLink="BuyerToStore" portType="sto:StoreInterface" variable="AccountNotFoundFaultVar"/>
+                    </sequence>
+                </catch>
+            </faultHandlers>
+            <sequence>
+				<assign name="CopyPurchaseDetails">
+                    <copy>
+                        <from>
+                            <literal xml:space="preserve">
+                            	<tns:CreditCheckRequest xmlns:tns="http://www.jboss.org/examples/creditAgency" 
+                            				xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                            				xsi:schemaLocation="http://www.jboss.org/examples/creditAgency creditAgency.xsd "
+                            				id="" customer="" >
+                            	</tns:CreditCheckRequest>
+                            </literal>
+                        </from>
+                        <to variable="checkCreditRequestVar" part="content"></to>
+                    </copy>
+				    <copy>
+				        <from>$buyRequestVar.content/@id</from>
+				        <to>$checkCreditRequestVar.content/@id</to>
+				    </copy>
+				    <copy>
+				        <from>$buyRequestVar.content/@customer</from>
+				        <to>$checkCreditRequestVar.content/@customer</to>
+				    </copy>
+                </assign>
+                 <invoke inputVariable="checkCreditRequestVar" name="Send_CreditCheckRequest" operation="checkCredit" outputVariable="checkCreditResponseVar" partnerLink="StoreToCreditAgency" portType="ca:CreditAgencyInterface"/>
+                <if>
+					<condition><![CDATA[
+						$checkCreditResponseVar.content/@rating > 5
+					]]></condition>
+                	<sequence>
+						<assign name="CopyPurchaseDetails">
+		                    <copy>
+		                        <from>
+		                            <literal xml:space="preserve">
+										<tns:DeliveryRequest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+													xmlns:tns="http://www.jboss.org/examples/logistics" 
+													xsi:schemaLocation="http://www.jboss.org/examples/logistics logistics.xsd " 
+													id="" />
+		                            </literal>
+		                        </from>
+		                        <to variable="deliverRequestVar" part="content"></to>
+		                    </copy>
+						    <copy>
+						        <from>$checkCreditResponseVar.content/@id</from>
+						        <to>$deliverRequestVar.content/@id</to>
+						    </copy>
+						</assign>
+
+                        <invoke inputVariable="deliverRequestVar" name="Send_DeliveryRequest" operation="deliver" outputVariable="deliverResponseVar" partnerLink="StoreToLogistics" portType="lg:LogisticsInterface"/>
+
+						<assign name="CopyPurchaseDetails">
+		                    <copy>
+		                        <from>
+		                            <literal xml:space="preserve">
+										<tns:BuyConfirmed xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+													xmlns:tns="http://www.jboss.org/examples/store" 
+													xsi:schemaLocation="http://www.jboss.org/examples/store store.xsd " 
+													id="" />
+		                            </literal>
+		                        </from>
+		                        <to variable="buyResponseVar" part="content"></to>
+		                    </copy>
+						    <copy>
+						        <from>$deliverResponseVar.content/@id</from>
+						        <to>$buyResponseVar.content/@id</to>
+						    </copy>
+						</assign>
+						
+                        <reply name="Send_BuyConfirmed" operation="buy" partnerLink="BuyerToStore" portType="sto:StoreInterface" variable="buyResponseVar"/>
+                    </sequence>
+                    <else>
+                        <sequence>
+							<assign name="CopyPurchaseDetails">
+			                    <copy>
+			                        <from>
+			                            <literal xml:space="preserve">
+											<tns:BuyFailed xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+														xmlns:tns="http://www.jboss.org/examples/store" 
+														xsi:schemaLocation="http://www.jboss.org/examples/store store.xsd " 
+														id="" />
+			                            </literal>
+			                        </from>
+			                        <to variable="BuyFailedFaultVar" part="content"></to>
+			                    </copy>
+							    <copy>
+							        <from>$checkCreditResponseVar.content/@id</from>
+							        <to>$BuyFailedFaultVar.content/@id</to>
+							    </copy>
+							</assign>
+
+                            <reply faultName="sto:BuyFailed" name="Send_BuyFailed" operation="buy" partnerLink="BuyerToStore" portType="sto:StoreInterface" variable="BuyFailedFaultVar"/>
+                        </sequence>
+                    </else>
+                </if>
+            </sequence>
+        </scope>
+    </sequence>
+</process>
