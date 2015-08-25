@@ -1,6 +1,6 @@
 # sketchbook-promela
 
-TODO ...
+![Color Picker in action](https://github.com/ubinix-warun/raw/master/preview.png)
 
 ## Build Promela SPIN from Source on Ubuntu 14.04 (Freya)
 
