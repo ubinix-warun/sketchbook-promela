@@ -28,18 +28,79 @@ proctype StoreToLogistics() { // STL.
     printf("STL. stoped\n");
 }
 
+typedef checkCreditRequestVar {
+  int id;
+  int customer; // customer (string)
+};
+
+typedef checkCreditResponseVar {
+  int id;
+  int rating;
+};
+
+/*typedef customerUnknownFaultVar {
+  int id;
+};*/
+
+chan chan_sta = [0] of {mtype, int};
+chan chan_ats = [0] of {mtype, int};
+proctype StoreToCreditAgency() { // STA.
+      printf("STA. started\n");
+
+      checkCreditRequestVar reqSTA;
+      checkCreditResponseVar resSTA;
+      /*customerUnknownFaultVar resSTA_NOF;*/
+
+      chan_sta ? reqSTA;
+
+      if
+      :: (reqSTA.customer != 1) -> ;
+        resSTA.id = reqSTA.id;
+        resSTA.rating = 7;
+        chan_ats ! resSTA;
+      :: else -> ;
+      // else throw!!!
+      fi
+
+      printf("STA. stoped\n");
+}
+
 proctype Workflow() {
     printf("Workflow started\n");
-    run StoreToLogistics();
 
     deliverRequestVar reqSTL;
     deliverResponseVar resSTL;
 
-    reqSTL.id = 27;
+/*
+    run StoreToLogistics();
+
+    reqSTL.id = 99;
     chan_stl ! reqSTL;
     chan_lts ? resSTL;
+*/
 
     // ...
+
+    checkCreditRequestVar reqSTA;
+    checkCreditResponseVar resSTA;
+
+    run StoreToCreditAgency();
+
+    reqSTA.id = 27;
+    reqSTA.customer = 2; // ref '1' to 'FRED'
+
+    chan_sta ! reqSTA;
+    chan_ats ? resSTA;
+
+    if
+    :: (resSTA.rating > 5) -> ;
+      run StoreToLogistics();
+
+      reqSTL.id = 28;
+      chan_stl ! reqSTL;
+      chan_lts ? resSTL;
+    fi
+
     printf("Workflow stoped\n");
 }
 
