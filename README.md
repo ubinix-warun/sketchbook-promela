@@ -1,4 +1,5 @@
 # sketchbook-promela
+Learning Promela, SPIN and Sketch It 
 
 ![Preview](https://github.com/ubinix-warun/sketchbook-promela/raw/master/preview.png)
 
