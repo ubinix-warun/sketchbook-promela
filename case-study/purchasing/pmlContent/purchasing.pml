@@ -23,7 +23,7 @@ proctype Workflow() {
     run StoreToCreditAgency();
 
     reqSTA.id = 27;
-    reqSTA.customer = 2; // ref '1' to 'FRED'
+    reqSTA.customer = 1; // ref '1' to 'FRED'
 
     chan_sta ! reqSTA;
     chan_ats ? resSTA;
