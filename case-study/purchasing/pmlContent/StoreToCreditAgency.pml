@@ -8,6 +8,11 @@ typedef checkCreditResponseVar {
   int rating;
 };
 
+
+chan chan_stca = [0] of {mtype, int};
+chan chan_cats = [0] of {mtype, int};
+
+// --------------------------------------------------
 // FaultVar ...
 typedef customerUnknownFaultVar {
   int id;
@@ -18,35 +23,46 @@ proctype ExceptionManager(int scope) {
   // faultName
   // variable
   if
-  :: (scope == 1) -> ; // STA "CustomerUnknown"
-    customerUnknownFaultVar faultVar;
-    chan_xtem ? faultVar;
-    printf("CustomeUnknown %d\n",faultVar.id);
+  :: (scope == 1) -> ; // STCA "CustomerUnknown"
+    checkCreditResponseVar resSTA;
+    customerUnknownFaultVar resSTA_NOF;
+    chan_xtem ? resSTA_NOF;
+    printf(" ! CustomeUnknown %d\n",resSTA_NOF.id);
+    chan_cats ! resSTA, resSTA_NOF;
   fi
 
 }
+// --------------------------------------------------
 
-chan chan_sta = [0] of {mtype, int};
-chan chan_ats = [0] of {mtype, int};
 proctype StoreToCreditAgency() { // STA.
-      printf("STA. started\n");
+      printf("STCA. started\n");
 
-      checkCreditRequestVar reqSTA;
-      checkCreditResponseVar resSTA;
-      customerUnknownFaultVar resSTA_NOF;
+      checkCreditRequestVar reqSTCA;
+      checkCreditResponseVar resSTCA;
+      customerUnknownFaultVar resSTCA_NOF;
 
-      chan_sta ? reqSTA;
+      chan_stca ? reqSTCA;
 
       if
-      :: (reqSTA.customer != 1) -> ; // 1 = Fred
-        resSTA.id = reqSTA.id;
-        resSTA.rating = 7;
-        chan_ats ! resSTA;
+      :: (reqSTCA.customer != 1) -> ; // 1 = Fred
+
+        printf(" > reqWithId = \"%d\" and !Fred\n",reqSTCA.id);
+        resSTCA.id = reqSTCA.id;
+        resSTCA.rating = 7;
+        printf(" > resWithId = \"%d\" and rating =\"%d\"\n", reqSTCA.id, resSTCA.rating);
+
+        chan_cats ! resSTCA, resSTCA_NOF;
+
       :: else -> ;
-        resSTA_NOF.id = reqSTA.id;
+
+        printf(" > reqWithId = \"%d\" and isFred\n",reqSTCA.id);
+        resSTCA_NOF.id = reqSTCA.id;
+        printf(" ! throw \"CustomerUnknown\" to ExceptionManager\n");
+
         run ExceptionManager(1);
-        chan_xtem ! resSTA_NOF; // throw "CustomerUnknown"
+        chan_xtem ! resSTCA_NOF; // throw "CustomerUnknown"
+
       fi
 
-      printf("STA. stoped\n");
+      printf("STCA. stoped\n");
 }
