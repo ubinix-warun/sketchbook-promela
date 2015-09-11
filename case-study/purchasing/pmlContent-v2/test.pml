@@ -79,7 +79,6 @@ proctype Testflow_BTS_RequestWithNotFred() {
     printf("Testflow_BTS_RequestWithNotFred ... stoped\n");
 }
 
-
 proctype Testflow_BTS_RequestWithFred() {
     printf("Testflow_BTS_RequestWithFred ... started\n");
 
