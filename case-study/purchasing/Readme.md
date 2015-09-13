@@ -1,12 +1,15 @@
+# Purchasing Service
 
-Feature
+![Preview](https://github.com/ubinix-warun/sketchbook-promela/case-study/purchasing/raw/master/b2b-purchasing-bpels.png)
+
+## Feature (pmlContect-v3)
 * support bpel(s) model on promela-spin
 
-TODO
+## TODO
 * ~~fix multi-channel reply to invoker.~~
-* faultHandler proctype
+* ~~faultHandler proctype, ExceptionManager~~
 * LTL formula
-* Blueprint
+* BPEL blueprint
 
-Credit
-pmlContent* base on "Translation pattern of BPEL process into Promela code",  Nakashiro
+## Credit
+pmlContent* base on "Translation pattern of BPEL process into Promela code",  Nakashiro and "Lightweight formal analysis of Web service flows", Nakajima

@@ -31,6 +31,23 @@ chan chan_bts = [0] of {mtype, int, vars_bts};
 chan chan_stb = [0] of {mtype, int, vars_stb};
 // -------------------------------------
 
+#define MSG_TYPE_EXCEPTION_U 1
+chan chan_stem_s = [0] of {mtype, int, customerUnknownFaultVar};
+proctype ExceptionManager_Store() {
+
+  customerUnknownFaultVar u_fault;
+  chan_stem_s ? MSG_TYPE_EXCEPTION_U, u_fault;
+
+  printf(">>> CustomerUnknown %d\n",u_fault.id);
+
+  vars_stb repy_vars;
+  repy_vars.n_fault.id = u_fault.id;
+
+  chan_stb ! MSG_TYPE_RES_BUY, repy_vars;
+}
+
+// -------------------------------------
+
 proctype BuyerToStore() {
     printf("BTS started\n");
 
@@ -74,10 +91,9 @@ proctype BuyerToStore() {
 
     fi unless {
       (argsCATS.u_fault.id != 0) -> ;
-        printf(">>> CustomerUnknown %d\n",argsCATS.u_fault.id);
-        repy_vars.n_fault.id = argsCATS.u_fault.id;
+        run ExceptionManager_Store();
+        chan_stem_s ! MSG_TYPE_EXCEPTION_U, argsCATS.u_fault;
 
-        chan_stb ! MSG_TYPE_RES_BUY, repy_vars; // Wrap to Exception-Handler
       }
 
     printf("BTS stoped\n");
