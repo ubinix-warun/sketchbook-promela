@@ -1,6 +1,6 @@
 # Purchasing Service
 
-![Preview](https://github.com/ubinix-warun/sketchbook-promela/case-study/purchasing/raw/master/b2b-purchasing-bpels.png)
+![Preview](https://raw.githubusercontent.com/ubinix-warun/sketchbook-promela/master/case-study/purchasing/b2b-purchasing-bpels.png)
 
 ## Feature (pmlContect-v3)
 * support bpel(s) model on promela-spin
