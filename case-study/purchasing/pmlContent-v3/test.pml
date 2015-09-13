@@ -64,17 +64,17 @@ proctype Testflow_BTS_RequestWithNotFred() {
 
     run BuyerToStore();
 
-    vars_bts reqBTS;
-    vars_stb resBTS;
+    vars_bts argsBTS;
+    vars_stb argsSTB;
 
-    reqBTS.b_req.id = 27;
-    reqBTS.b_req.customer = 2; // ref 1 => Fred (Unknown)
+    argsBTS.b_req.id = 27;
+    argsBTS.b_req.customer = 2; // ref 1 => Fred (Unknown)
 
-    chan_bts ! reqBTS;
-    chan_stb ? resBTS;
+    chan_bts ! MSG_TYPE_REQ_BUY, argsBTS;
+    chan_stb ? MSG_TYPE_RES_BUY, argsSTB;
 
     // Confirm ?
-    assert(resBTS.b_res.id == 27);
+    assert(argsSTB.b_res.id == 27);
 
     printf("Testflow_BTS_RequestWithNotFred ... stoped\n");
 }
@@ -84,18 +84,18 @@ proctype Testflow_BTS_RequestWithFred() {
 
     run BuyerToStore();
 
-    vars_bts reqBTS;
-    vars_stb resBTS;
+    vars_bts argsBTS;
+    vars_stb argsSTB;
 
-    reqBTS.b_req.id = 27;
-    reqBTS.b_req.customer = 1; // ref 1 => Fred (Unknown)
+    argsBTS.b_req.id = 27;
+    argsBTS.b_req.customer = 1; // ref 1 => Fred (Unknown)
 
-    chan_bts ! reqBTS;
-    chan_stb ? resBTS;
+    chan_bts ! MSG_TYPE_REQ_BUY, argsBTS;
+    chan_stb ? MSG_TYPE_RES_BUY, argsSTB;
 
     // Fail ?
-    assert(resBTS.b_res.id == 0);
-    assert(resBTS.n_fault.id == 27);
+    assert(argsSTB.b_res.id == 0);
+    assert(argsSTB.n_fault.id == 27);
 
     printf("Testflow_BTS_RequestWithFred ... stoped\n");
 }
@@ -107,5 +107,6 @@ init {
   /*run Testflow_STCA_RequestWithFred();*/
   /*run Testflow_BTS_RequestWithNotFred();*/
   run Testflow_BTS_RequestWithFred();
+  /* Testflow_BTS_RequestWithKate (Kate's Credit <= 5)*/
 
 }

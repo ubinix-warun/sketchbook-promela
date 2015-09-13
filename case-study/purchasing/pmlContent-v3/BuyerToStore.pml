@@ -1,3 +1,5 @@
+#define MSG_TYPE_REQ_BUY 0
+#define MSG_TYPE_RES_BUY 1
 
 typedef buyRequestVar {
   int id;
@@ -25,8 +27,8 @@ typedef vars_stb {
   accountNotFoundFaultVar n_fault;
   buyFailedFaultVar b_fault;
 }
-chan chan_bts = [0] of {mtype, int};
-chan chan_stb = [0] of {mtype, int};
+chan chan_bts = [0] of {mtype, int, vars_bts};
+chan chan_stb = [0] of {mtype, int, vars_stb};
 // -------------------------------------
 
 proctype BuyerToStore() {
@@ -35,7 +37,7 @@ proctype BuyerToStore() {
     vars_bts recv_vars;
     vars_stb repy_vars;
 
-    chan_bts ? recv_vars;
+    chan_bts ? MSG_TYPE_REQ_BUY, recv_vars;
 
     run StoreToCreditAgency();
 
@@ -62,20 +64,20 @@ proctype BuyerToStore() {
 
       repy_vars.b_res.id = argsLTS.d_res.id;
 
-      chan_stb ! repy_vars;
+      chan_stb ! MSG_TYPE_RES_BUY, repy_vars;
 
     :: else -> ;
 
       repy_vars.b_fault.id = argsCATS.c_res.id;
 
-      chan_stb ! repy_vars;
+      chan_stb ! MSG_TYPE_RES_BUY, repy_vars;
 
     fi unless {
       (argsCATS.u_fault.id != 0) -> ;
         printf(">>> CustomerUnknown %d\n",argsCATS.u_fault.id);
         repy_vars.n_fault.id = argsCATS.u_fault.id;
-        
-        chan_stb ! repy_vars;
+
+        chan_stb ! MSG_TYPE_RES_BUY, repy_vars; // Wrap to Exception-Handler
       }
 
     printf("BTS stoped\n");
