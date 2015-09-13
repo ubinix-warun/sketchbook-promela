@@ -3,8 +3,8 @@ Feature
 * support bpel(s) model on promela-spin
 
 TODO
-* fix multi-channel reply to invoker
-* faultHandler protype
+* -fix multi-channel reply to invoker-
+* faultHandler proctype
 * LTL formula
 * Blueprint
 
