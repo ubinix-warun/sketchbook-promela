@@ -185,7 +185,7 @@ active proctype BuyerToStore() {
 
       if
       :: (argsCATS.c_res.rating > 5) -> ;
-        run StoreToLogistics();
+        //run StoreToLogistics();
 
         vars_stl argsSTL;
         vars_lts argsLTS;
@@ -216,18 +216,13 @@ active proctype BuyerToStore() {
     printf("BTS stoped\n");
 }
 
-
 vars_bts argsBTS;
 vars_stb argsSTB;
-
-int test
 
 active proctype xyz() {
 
   argsBTS.b_req.id = 27;
   argsBTS.b_req.customer = 0; // ref 1 => Fred (Unknown)
-
-  test = 6;
 
   chan_bts ! MSG_TYPE_REQ_BUY, argsBTS;
   chan_stb ? MSG_TYPE_RES_BUY, argsSTB;
@@ -235,9 +230,9 @@ active proctype xyz() {
 }
 
 // spin -a pmlContent-v5/purchasing.pml
-// gcc -o  pan pan.c // SAFETY?
+// gcc -o  pan pan.c 
 // ./pan -a -N p1
 
-//ltl p1 { (argsBTS.b_req.id == 27) -> <> (argsCATS.c_res.rating == 7)}
+ltl p1 { (argsBTS.b_req.id == 27) -> <> (argsCATS.c_res.rating == 7)}
 //ltl p2 { (argsBTS.b_req.id == 27) -> <> (argsCATS.c_res.rating == 0)}
 //ltl p3 { !(argsBTS.b_req.id == 27) }
