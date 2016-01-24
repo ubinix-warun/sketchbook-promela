@@ -8,7 +8,7 @@
 ## TODO
 * ~~fix multi-channel reply to invoker.~~
 * ~~faultHandler proctype, ExceptionManager~~
-* LTL formula
+* ~~LTL formula~~
 * BPEL blueprint
 
 ## Credit
