@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Definitions id="PurchasingTypes" name="PurchasingTypes"
+  targetNamespace="http://www.example.com/tosca/Types/Purchasing"
+  xmlns="http://docs.oasis-open.org/tosca/ns/2011/12"
+  xmlns:ns1="http://docs.oasis-open.org/tosca/ns/2011/12/ToscaSpecificTypes"
+  xmlns:ns2="http://docs.oasis-open.org/tosca/ns/2011/12/ToscaBaseTypes"
+  xmlns:tns="http://www.example.com/tosca/Types/Purchasing">
+
+  <NodeType name="BPELContainer">
+    <documentation>BPEL Container</documentation>
+    <DerivedFrom typeRef="ns1:SwitchYardContainer"/>
+    <PropertiesDefinition element="tns:BEPLContainerProperties"/>
+  </NodeType>
+
+  <!-- Submit CheckCredit -->
+  <RequirementType name="CheckCreditRequirement"
+          requiredCapabilityType="tns:CheckCreditCapability">
+    <documentation>CheckCredit Requirement</documentation>
+    <DerivedFrom typeRef="tns:BPELRequirementType"/>
+  </RequirementType>
+  <CapabilityType name="CheckCreditCapability">
+    <documentation>CheckCredit Capability</documentation>
+    <DerivedFrom typeRef="tns:BPELCapabilityType"/>
+  </CapabilityType>
+  <RelationshipType name="CheckCreditType">
+    <documentation>Connects to BPEL</documentation>
+    <DerivedFrom typeRef="tns:BPELRelationshipType"/>
+    <ValidSource typeRef="tns:CheckCreditRequirement"/>
+    <ValidTarget typeRef="tns:CheckCreditCapability"/>
+  </RelationshipType>
+
+  <!-- Return CreditData -->
+  <RequirementType name="CreditDataRequirement"
+          requiredCapabilityType="tns:CheckCreditCapability">
+    <documentation>CreditData Requirement</documentation>
+    <DerivedFrom typeRef="tns:BPELRequirementType"/>
+  </RequirementType>
+  <CapabilityType name="CreditDataCapability">
+    <documentation>CreditData Capability</documentation>
+    <DerivedFrom typeRef="tns:BPELCapabilityType"/>
+  </CapabilityType>
+  <RelationshipType name="CreditDataType">
+    <documentation>Connects to BPEL</documentation>
+    <DerivedFrom typeRef="tns:BPELRelationshipType"/>
+    <ValidSource typeRef="tns:CreditDataRequirement"/>
+    <ValidTarget typeRef="tns:CreditDataCapability"/>
+  </RelationshipType>
+
+  <!-- CreditAgency Node -->
+  <NodeType name="CreditAgencyContainer">
+    <documentation>CreditAgency Container</documentation>
+    <DerivedFrom typeRef="ns1:BPELContainer"/>
+    <RequirementDefinitions>
+      <RequirementDefinition lowerBound="1" name="creditDataRequirement"
+        requirementType="tns:CreditDataRequirement" upperBound="1"/>
+      </RequirementDefinitions>
+    <CapabilityDefinitions>
+      <CapabilityDefinition lowerBound="0" name="checkCreditCapability"
+        capabilityType="tns:CheckCreditCapability" upperBound="unbounded"/>
+    </CapabilityDefinitions>
+  </NodeType>
+
+  <!-- Submit Request -->
+  <RequirementType name="RequestRequirement"
+          requiredCapabilityType="tns:RequestCapability">
+    <documentation>Request Requirement</documentation>
+    <DerivedFrom typeRef="tns:BPELRequirementType"/>
+  </RequirementType>
+  <CapabilityType name="RequestCapability">
+    <documentation>Request Capability</documentation>
+    <DerivedFrom typeRef="tns:BPELCapabilityType"/>
+  </CapabilityType>
+  <RelationshipType name="RequestType">
+    <documentation>Connects to BPEL</documentation>
+    <DerivedFrom typeRef="tns:BPELRelationshipType"/>
+    <ValidSource typeRef="tns:RequestRequirement"/>
+    <ValidTarget typeRef="tns:RequestCapability"/>
+  </RelationshipType>
+
+  <!-- Return DeliveryData -->
+  <RequirementType name="DeliveryDataRequirement"
+          requiredCapabilityType="tns:DeliveryDataCapability">
+    <documentation>DeliveryData Requirement</documentation>
+    <DerivedFrom typeRef="tns:BPELRequirementType"/>
+  </RequirementType>
+  <CapabilityType name="DeliveryDataCapability">
+    <documentation>DeliveryData Capability</documentation>
+    <DerivedFrom typeRef="tns:BPELCapabilityType"/>
+  </CapabilityType>
+  <RelationshipType name="DeliveryDataType">
+    <documentation>Connects to BPEL</documentation>
+    <DerivedFrom typeRef="tns:BPELRelationshipType"/>
+    <ValidSource typeRef="tns:DeliveryDataRequirement"/>
+    <ValidTarget typeRef="tns:DeliveryDataCapability"/>
+  </RelationshipType>
+
+  <!-- Logistic Node -->
+  <NodeType name="LogisticContainer">
+    <documentation>Logistic Container</documentation>
+    <DerivedFrom typeRef="ns1:BPELContainer"/>
+    <RequirementDefinitions>
+      <RequirementDefinition lowerBound="1" name="deliveryDataRequirement"
+        requirementType="tns:DeliveryDataRequirement" upperBound="1"/>
+      </RequirementDefinitions>
+    <CapabilityDefinitions>
+      <CapabilityDefinition lowerBound="0" name="requestCapability"
+        capabilityType="tns:RequestCapability" upperBound="unbounded"/>
+    </CapabilityDefinitions>
+  </NodeType>
+
+  <!-- Submit Buy -->
+  <RequirementType name="BuyRequirement"
+          requiredCapabilityType="tns:BuyCapability">
+    <documentation>Buy Requirement</documentation>
+    <DerivedFrom typeRef="tns:BPELRequirementType"/>
+  </RequirementType>
+  <CapabilityType name="BuyCapability">
+    <documentation>Buy Capability</documentation>
+    <DerivedFrom typeRef="tns:BPELCapabilityType"/>
+  </CapabilityType>
+  <RelationshipType name="BuyType">
+    <documentation>Connects to BPEL</documentation>
+    <DerivedFrom typeRef="tns:BPELRelationshipType"/>
+    <ValidSource typeRef="tns:BuyRequirement"/>
+    <ValidTarget typeRef="tns:BuyCapability"/>
+  </RelationshipType>
+
+  <!-- Return Confirm -->
+  <RequirementType name="ConfirmRequirement"
+          requiredCapabilityType="tns:ConfirmCapability">
+    <documentation>Confirm Requirement</documentation>
+    <DerivedFrom typeRef="tns:BPELRequirementType"/>
+  </RequirementType>
+  <CapabilityType name="ConfirmCapability">
+    <documentation>Confirm Capability</documentation>
+    <DerivedFrom typeRef="tns:BPELCapabilityType"/>
+  </CapabilityType>
+  <RelationshipType name="ConfirmType">
+    <documentation>Connects to BPEL</documentation>
+    <DerivedFrom typeRef="tns:BPELRelationshipType"/>
+    <ValidSource typeRef="tns:ConfirmRequirement"/>
+    <ValidTarget typeRef="tns:ConfirmCapability"/>
+  </RelationshipType>
+
+  <!-- Buy Node -->
+  <NodeType name="BuyContainer">
+    <documentation>Buy Container</documentation>
+    <DerivedFrom typeRef="ns1:BPELContainer"/>
+    <RequirementDefinitions>
+      <RequirementDefinition lowerBound="1" name="buyRequirement"
+        requirementType="tns:BuyRequirement" upperBound="1"/>
+    </RequirementDefinitions>
+    <CapabilityDefinitions>
+      <CapabilityDefinition lowerBound="0" name="confirmCapability"
+        capabilityType="tns:ConfirmCapability" upperBound="unbounded"/>
+    </CapabilityDefinitions>
+  </NodeType>
+
+  <!-- Store Node -->
+  <NodeType name="StoreContainer">
+    <documentation>Store Container</documentation>
+    <DerivedFrom typeRef="ns1:BPELContainer"/>
+    <RequirementDefinitions>
+      <RequirementDefinition lowerBound="1" name="confirmRequirement"
+        requirementType="tns:ConfirmRequirement" upperBound="1"/>
+      <RequirementDefinition lowerBound="1" name="checkCreditRequirement"
+        requirementType="tns:CheckCreditRequirement" upperBound="1"/>
+      <RequirementDefinition lowerBound="1" name="requestRequirement"
+        requirementType="tns:RequestRequirement" upperBound="1"/>
+    </RequirementDefinitions>
+    <CapabilityDefinitions>
+      <CapabilityDefinition lowerBound="0" name="buyCapability"
+        capabilityType="tns:BuyCapability" upperBound="unbounded"/>
+      <CapabilityDefinition lowerBound="0" name="creditDataCapability"
+        capabilityType="tns:CreditDataCapability" upperBound="unbounded"/>
+      <CapabilityDefinition lowerBound="0" name="deliveryDataCapability"
+        capabilityType="tns:DeliveryDataCapability" upperBound="unbounded"/>
+    </CapabilityDefinitions>
+  </NodeType>
+
+</Definitions>

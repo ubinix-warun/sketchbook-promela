@@ -1,0 +1,12 @@
+TOSCA-Meta-Version: 1.0
+CSAR-Version: 1.0
+Created-By: Warun
+Entry-Definitions: Definitions/Purchasing-Definitions.xml
+
+Name: Definitions/PurchasingTypes-Definitions.xml
+Content-Type: application/vnd.oasis.tosca.definitions
+Diagram: Definitions/PurchasingTypes-Diagram.xml
+
+Name: Definitions/Purchasing-Definitions.xml
+Content-Type: application/vnd.oasis.tosca.definitions
+Diagram: Definitions/Purchasing-Diagram.xml
