@@ -50,6 +50,7 @@
   <NodeType name="CreditAgencyContainer">
     <documentation>CreditAgency Container</documentation>
     <DerivedFrom typeRef="ns1:BPELContainer"/>
+    <PropertiesDefinition element="tns:BPELProperties"/>
     <RequirementDefinitions>
       <RequirementDefinition lowerBound="1" name="creditDataRequirement"
         requirementType="tns:CreditDataRequirement" upperBound="1"/>
@@ -98,6 +99,7 @@
   <NodeType name="LogisticContainer">
     <documentation>Logistic Container</documentation>
     <DerivedFrom typeRef="ns1:BPELContainer"/>
+    <PropertiesDefinition element="tns:BPELProperties"/>
     <RequirementDefinitions>
       <RequirementDefinition lowerBound="1" name="deliveryDataRequirement"
         requirementType="tns:DeliveryDataRequirement" upperBound="1"/>
@@ -143,9 +145,10 @@
   </RelationshipType>
 
   <!-- Buy Node -->
-  <NodeType name="BuyContainer">
+  <NodeType name="BuyerContainer">
     <documentation>Buy Container</documentation>
     <DerivedFrom typeRef="ns1:BPELContainer"/>
+    <PropertiesDefinition element="tns:BPELProperties"/>
     <RequirementDefinitions>
       <RequirementDefinition lowerBound="1" name="buyRequirement"
         requirementType="tns:BuyRequirement" upperBound="1"/>
@@ -160,21 +163,22 @@
   <NodeType name="StoreContainer">
     <documentation>Store Container</documentation>
     <DerivedFrom typeRef="ns1:BPELContainer"/>
+    <PropertiesDefinition element="tns:BPELProperties"/>
     <RequirementDefinitions>
-      <RequirementDefinition lowerBound="1" name="confirmRequirement"
-        requirementType="tns:ConfirmRequirement" upperBound="1"/>
       <RequirementDefinition lowerBound="1" name="checkCreditRequirement"
         requirementType="tns:CheckCreditRequirement" upperBound="1"/>
       <RequirementDefinition lowerBound="1" name="requestRequirement"
         requirementType="tns:RequestRequirement" upperBound="1"/>
+      <RequirementDefinition lowerBound="1" name="confirmRequirement"
+        requirementType="tns:ConfirmRequirement" upperBound="1"/>
     </RequirementDefinitions>
     <CapabilityDefinitions>
-      <CapabilityDefinition lowerBound="0" name="buyCapability"
-        capabilityType="tns:BuyCapability" upperBound="unbounded"/>
       <CapabilityDefinition lowerBound="0" name="creditDataCapability"
         capabilityType="tns:CreditDataCapability" upperBound="unbounded"/>
       <CapabilityDefinition lowerBound="0" name="deliveryDataCapability"
         capabilityType="tns:DeliveryDataCapability" upperBound="unbounded"/>
+      <CapabilityDefinition lowerBound="0" name="buyCapability"
+        capabilityType="tns:BuyCapability" upperBound="unbounded"/>
     </CapabilityDefinitions>
   </NodeType>
 

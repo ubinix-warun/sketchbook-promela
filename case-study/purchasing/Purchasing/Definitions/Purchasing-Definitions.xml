@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Definitions id="PurchasingDefinitions" name="Purchasing Definitions"
+  targetNamespace="http://www.example.com/tosca/ServiceTemplates/Purchasing"
+  xmlns="http://docs.oasis-open.org/tosca/ns/2011/12"
+  xmlns:ns1="http://docs.oasis-open.org/tosca/ns/2011/12/ToscaBaseTypes"
+  xmlns:ns2="http://docs.oasis-open.org/tosca/ns/2011/12/ToscaSpecificTypes" xmlns:ns3="http://www.example.com/tosca/Types/Purchasing">
+  <Import importType="http://docs.oasis-open.org/tosca/ns/2011/12"
+    location="PurchasingTypes-Definitions.xml" namespace="http://www.example.com/tosca/Types/Purchasing"/>
+  <ServiceTemplate id="Purchasing" name="Purchasing_Template">
+    <TopologyTemplate>
+
+      <NodeTemplate id="CreditAgencyContainer"
+        name="Container-CreditAgency" type="ns1:CreditAgencyContainer">
+        <Properties>
+        <BPELProperties>
+            <Process>files/PurchaseGoodsProcess_CreditAgency.bpel</Process>
+        </BPELProperties>
+        </Properties>
+        <Requirements>
+          <Requirement id="CreditAgencyC_CreditData"
+            name="portType_creditDataReq"
+            type="ns2:CreditDataRequirement"/>
+        </Requirements>
+        <Capabilities>
+          <Capability id="CreditAgencyC_CheckCredit"
+            name="portType_creditCreditCab"
+            type="ns2:CheckCreditCapability"/>
+        </Capabilities>
+      </NodeTemplate>
+
+      <NodeTemplate id="LogisticContainer"
+        name="Container-Logistic" type="ns1:LogisticContainer">
+        <Properties>
+        <BPELProperties>
+            <Process>files/PurchaseGoodsProcess_Logistic.bpel</Process>
+        </BPELProperties>
+        </Properties>
+        <Requirements>
+          <Requirement id="LogisticC_DeliveryData"
+            name="portType_deliveryDataReq"
+            type="ns2:DeliveryDataRequirement"/>
+        </Requirements>
+        <Capabilities>
+          <Capability id="LogisticC_Request"
+            name="portType_requestCab"
+            type="ns2:RequestCapability"/>
+        </Capabilities>
+      </NodeTemplate>
+
+      <NodeTemplate id="BuyerContainer"
+        name="Container-Buyer" type="ns1:BuyerContainer">
+        <Requirements>
+          <Requirement id="BuyerC_Buy"
+            name="portType_buyReq"
+            type="ns2:BuyRequirement"/>
+        </Requirements>
+        <Capabilities>
+          <Capability id="BuyerC_Confirm"
+            name="portType_confirmCab"
+            type="ns2:ConfirmCapability"/>
+        </Capabilities>
+      </NodeTemplate>
+
+      <NodeTemplate id="StoreContainer" name="Container-Store" type="ns1:StoreContainer">
+        <Properties>
+        <BPELProperties>
+            <Process>files/PurchaseGoodsProcess_Store.bpel</Process>
+        </BPELProperties>
+        </Properties>
+        <Requirements>
+          <Requirement id="StoreC_CheckCredit"
+            name="portType_checkCreditReq"
+            type="ns2:CheckCreditRequirement"/>
+          <Requirement id="StoreC_Request"
+            name="portType_requestReq"
+            type="ns2:RequestRequirement"/>
+          <Requirement id="StoreC_Confirm"
+            name="portType_confirmReq"
+            type="ns2:ConfirmRequirement"/>
+        </Requirements>
+        <Capabilities>
+          <Capability id="StoreC_CreditData"
+            name="portType_creditDataCap"
+            type="ns2:CreditDataCapability"/>
+          <Capability id="StoreC_DeliveryData"
+            name="portType_deliveryDataCap"
+            type="ns2:DeliveryDataCapability"/>
+          <Capability id="StoreC_Buy"
+            name="portType_buyCap"
+            type="ns2:BuyCapability"/>
+        </Capabilities>
+      </NodeTemplate>
+
+      <RelationshipTemplate id="S2C_CheckCredit" name="CheckCredit" type="ns3:CheckCreditType">
+        <SourceElement ref="StoreC_CheckCredit"/>
+        <TargetElement ref="CreditAgencyC_CheckCredit"/>
+      </RelationshipTemplate>
+      <RelationshipTemplate id="C2S_CheckData" name="CreditData" type="ns3:CreditDataType">
+        <SourceElement ref="CreditAgencyC_CreditData"/>
+        <TargetElement ref="StoreC_CreditData"/>
+      </RelationshipTemplate>
+
+      <RelationshipTemplate id="S2L_Request" name="Request" type="ns3:RequestType">
+        <SourceElement ref="StoreC_Request"/>
+        <TargetElement ref="LogisticC_Request"/>
+      </RelationshipTemplate>
+      <RelationshipTemplate id="L2S_DeliveryData" name="DeliveryData" type="ns3:DeliveryDataType">
+        <SourceElement ref="LogisticC_DeliveryData"/>
+        <TargetElement ref="StoreC_DeliveryData"/>
+      </RelationshipTemplate>
+
+      <RelationshipTemplate id="B2S_Buy" name="Buy" type="ns3:BuyType">
+        <SourceElement ref="BuyerC_Buy"/>
+        <TargetElement ref="StoreC_Buy"/>
+      </RelationshipTemplate>
+      <RelationshipTemplate id="S2B_Confirm" name="Confirm" type="ns3:ConfirmType">
+        <SourceElement ref="StoreC_Confirm"/>
+        <TargetElement ref="BuyerC_Confirm"/>
+      </RelationshipTemplate>
+
+    </TopologyTemplate>
+
+  </ServiceTemplate>
+</Definitions>
